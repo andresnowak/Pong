@@ -1,5 +1,6 @@
 import pygame
 
+
 class Ball:
     RADIUS = 12
 
@@ -10,7 +11,6 @@ class Ball:
 
     def show(self, color):
         pygame.draw.circle(self.screen, color, (self.x, self.y), self.RADIUS)
-
 
 
 class Player:
@@ -27,7 +27,8 @@ class Player:
         self.screen = screen
 
     def show(self, color):
-        pygame.draw.rect(self.screen, color, pygame.Rect(self.x - self.WIDTH - self.PAD, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT))
+        pygame.draw.rect(self.screen, color, pygame.Rect(
+            self.x - self.WIDTH - self.PAD, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT))
 
     def move_down(self):
         self.show(self.HIDE)
@@ -40,7 +41,6 @@ class Player:
         self.show(self.SHOW)
 
 
-
 WIDTH = 1200
 HEIGHT = 600
 BORDER = 20
@@ -48,6 +48,7 @@ BORDER = 20
 fgColor = pygame.Color("white")
 
 FRAMERATE = 30
+
 
 def move(event, player1, player2, controls):
     """
@@ -88,7 +89,9 @@ def draw_background(screen):
     """
     pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, WIDTH, BORDER))
     pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, HEIGHT, BORDER))
-    pygame.draw.rect(screen, fgColor, pygame.Rect(0, HEIGHT - BORDER, WIDTH, BORDER))
+    pygame.draw.rect(screen, fgColor, pygame.Rect(
+        0, HEIGHT - BORDER, WIDTH, BORDER))
+
 
 def main():
     # start the game screen
@@ -100,7 +103,7 @@ def main():
     # dictionary to update player movements
     pressed_keys = {"w": False, "s": False, "down": False, "up": False}
 
-    #create the ball
+    # create the ball
     ball = Ball(WIDTH // 2, HEIGHT // 2, screen)
 
     # crate the players
@@ -111,20 +114,21 @@ def main():
 
     player1.show(fgColor)
     player2.show(fgColor)
-    
+
     while True:
         event = pygame.event.poll()
 
-        #check if the window was closed
+        # check if the window was closed
         if event.type == pygame.QUIT:
             break
 
         move(event, player1, player2, pressed_keys)
-        
+
         pygame.display.flip()
         clock.tick(FRAMERATE)
 
     pygame.quit()
+
 
 if __name__ == "__main__":
     main()

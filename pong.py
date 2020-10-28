@@ -4,8 +4,8 @@ import pygame
 class Ball:
     RADIUS = 12
 
-    HIDE = pygame.Color("black")
-    SHOW = pygame.Color("white")
+    HIDE = pygame.Color("black")  # color to hide the ball with background
+    SHOW = pygame.Color("white")  # color tho show the ball
 
     def __init__(self, x, y, vx, vy, screen):
         self.x = x
@@ -13,35 +13,66 @@ class Ball:
         self.vx = vx
         self.vy = vy
 
+        self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 30, 30)
+
         self.screen = screen
 
     def show(self, color):
         pygame.draw.circle(self.screen, color, (self.x, self.y), self.RADIUS)
+        pygame.draw.rect(self.screen, color, self.hitbox, 2)
 
-    def move(self):
+    def move(self, player1_pos, player2_pos):
+        """
+            moves the ball
+        """
         global BORDER
 
         new_pos_x = self.x + self.vx
         new_pos_y = self.y + self.vy
 
-        if new_pos_x < BORDER + self.RADIUS:
+        hitbox = (new_pos_x - self.RADIUS, new_pos_y - self.RADIUS, 25, 25)
+
+        if self.crashed(player1_pos, player2_pos, hitbox):
             self.vx *= -1
         elif new_pos_y < BORDER + self.RADIUS or new_pos_y > HEIGHT - BORDER - self.RADIUS:
             self.vy *= -1
+
         else:
             self.show(self.HIDE)
+
+            # update position of ball
             self.x = new_pos_x
             self.y = new_pos_y
 
+            # update position of its hitbox
+            self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 25, 25)
+
             self.show(self.SHOW)
+
+    def crashed(self, player1_pos, player2_pos, hitbox):
+        """
+            Check if the ball has crashed with a player to bounce
+        """
+        global WIDTH
+
+        if hitbox[0] + hitbox[2] >= WIDTH - player1_pos[2] and hitbox[0] + hitbox[2] < WIDTH:
+            if hitbox[1] <= player1_pos[0] and hitbox[1] + hitbox[3] >= player1_pos[0] - player1_pos[1]:
+                print("hey")
+                return True
+        elif hitbox[0] <= player2_pos[2] and hitbox[0] > 0:
+            if hitbox[1] <= player2_pos[0] and hitbox[1] + hitbox[3] >= player2_pos[0] - player2_pos[1]:
+                print("hey2")
+                return True
+        else:
+            return False
 
 
 class Player:
     WIDTH = 15
     HEIGHT = 100
 
-    HIDE = pygame.Color("black")
-    SHOW = pygame.Color("white")
+    HIDE = pygame.Color("black")  # color to hide the player with background
+    SHOW = pygame.Color("white")  # color tho show the player
 
     def __init__(self, x, y, screen):
         self.x = x
@@ -61,7 +92,7 @@ class Player:
 
         # the amount of pixels the player moves
 
-        move = 10
+        move = 6
 
         new_pos = self.y + move
 
@@ -93,6 +124,9 @@ class Player:
         self.y += move
         self.show(self.SHOW)
 
+    def get_position(self):
+        return self.y, self.HEIGHT, self.WIDTH
+
 
 WIDTH = 1200
 HEIGHT = 600
@@ -100,7 +134,7 @@ BORDER = 20
 
 fgColor = pygame.Color("white")
 
-FRAMERATE = 30
+FRAMERATE = 60
 
 
 def move(event, player1, player2, controls):
@@ -154,8 +188,8 @@ def main():
     clock = pygame.time.Clock()
 
     # speed for ball
-    ball_vx = 8
-    ball_vy = 8
+    ball_vx = 5
+    ball_vy = 5
 
     # dictionary to update player movements
     pressed_keys = {"w": False, "s": False, "down": False, "up": False}
@@ -182,7 +216,7 @@ def main():
             break
 
         move(event, player1, player2, pressed_keys)
-        ball.move()
+        ball.move(player1.get_position(), player2.get_position())
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

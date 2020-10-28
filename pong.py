@@ -4,19 +4,41 @@ import pygame
 class Ball:
     RADIUS = 12
 
-    def __init__(self, x, y, screen):
+    HIDE = pygame.Color("black")
+    SHOW = pygame.Color("white")
+
+    def __init__(self, x, y, vx, vy, screen):
         self.x = x
         self.y = y
+        self.vx = vx
+        self.vy = vy
+
         self.screen = screen
 
     def show(self, color):
         pygame.draw.circle(self.screen, color, (self.x, self.y), self.RADIUS)
 
+    def move(self):
+        global BORDER
+
+        new_pos_x = self.x + self.vx
+        new_pos_y = self.y + self.vy
+
+        if new_pos_x < BORDER + self.RADIUS:
+            self.vx *= -1
+        elif new_pos_y < BORDER + self.RADIUS or new_pos_y > HEIGHT - BORDER - self.RADIUS:
+            self.vy *= -1
+        else:
+            self.show(self.HIDE)
+            self.x = new_pos_x
+            self.y = new_pos_y
+
+            self.show(self.SHOW)
+
 
 class Player:
     WIDTH = 15
     HEIGHT = 100
-    PAD = 5
 
     HIDE = pygame.Color("black")
     SHOW = pygame.Color("white")
@@ -28,16 +50,47 @@ class Player:
 
     def show(self, color):
         pygame.draw.rect(self.screen, color, pygame.Rect(
-            self.x - self.WIDTH - self.PAD, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT))
+            self.x - self.WIDTH, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT))
 
     def move_down(self):
+        """
+            Moves the player down
+        """
+        global BORDER
+        global HEIGHT
+
+        # the amount of pixels the player moves
+
+        move = 10
+
+        new_pos = self.y + move
+
+        # check if the player is gonna pass the borders of the game
+        if new_pos > HEIGHT - BORDER - (self.HEIGHT // 2):
+            move = 0
+
         self.show(self.HIDE)
-        self.y += 10
+        self.y += move
         self.show(self.SHOW)
 
     def move_up(self):
+        """
+            moves the player up
+        """
+        global BORDER
+        global HEIGHT
+
+        # the amount of pixels the player moves
+        move = -10
+
+        new_pos = self.y + move
+
+        # check if the player is gonna pass the borders of the game
+        if new_pos < BORDER + (self.HEIGHT // 2):
+            move = 0
+
         self.show(self.HIDE)
-        self.y -= 10
+        self.y += move
         self.show(self.SHOW)
 
 
@@ -100,17 +153,23 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
+    # speed for ball
+    ball_vx = 8
+    ball_vy = 8
+
     # dictionary to update player movements
     pressed_keys = {"w": False, "s": False, "down": False, "up": False}
 
     # create the ball
-    ball = Ball(WIDTH // 2, HEIGHT // 2, screen)
+    ball = Ball(WIDTH // 2, HEIGHT // 2, ball_vx, ball_vy, screen)
 
     # crate the players
     player1 = Player(WIDTH, HEIGHT // 2, screen)
-    player2 = Player(25, HEIGHT // 2, screen)
+    player2 = Player(15, HEIGHT // 2, screen)
 
     draw_background(screen)
+
+    ball.show(fgColor)
 
     player1.show(fgColor)
     player2.show(fgColor)
@@ -123,6 +182,7 @@ def main():
             break
 
         move(event, player1, player2, pressed_keys)
+        ball.move()
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

@@ -2,7 +2,7 @@ import pygame
 
 
 class Ball:
-    RADIUS = 12
+    RADIUS = 20
 
     HIDE = pygame.Color("black")  # color to hide the ball with background
     SHOW = pygame.Color("white")  # color tho show the ball
@@ -13,12 +13,14 @@ class Ball:
         self.vx = vx
         self.vy = vy
 
+        self.ball = pygame.Rect(x, y, self.RADIUS, self.RADIUS)
+
         self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 30, 30)
 
         self.screen = screen
 
     def show(self, color):
-        pygame.draw.circle(self.screen, color, (self.x, self.y), self.RADIUS)
+        pygame.draw.ellipse(self.screen, color, self.ball)
         pygame.draw.rect(self.screen, color, self.hitbox, 2)
 
     def move(self, player1_pos, player2_pos):
@@ -27,8 +29,8 @@ class Ball:
         """
         global BORDER
 
-        new_pos_x = self.x + self.vx
-        new_pos_y = self.y + self.vy
+        new_pos_x = self.ball.x + self.vx
+        new_pos_y = self.ball.y + self.vy
 
         hitbox = (new_pos_x - self.RADIUS, new_pos_y - self.RADIUS, 25, 25)
 
@@ -41,8 +43,8 @@ class Ball:
             self.show(self.HIDE)
 
             # update position of ball
-            self.x = new_pos_x
-            self.y = new_pos_y
+            self.ball.x = new_pos_x
+            self.ball.y = new_pos_y
 
             # update position of its hitbox
             self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 25, 25)
@@ -79,49 +81,40 @@ class Player:
         self.y = y
         self.screen = screen
 
+        self.player = pygame.Rect(
+            self.x - self.WIDTH, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT)
+
     def show(self, color):
-        pygame.draw.rect(self.screen, color, pygame.Rect(
-            self.x - self.WIDTH, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT))
+        pygame.draw.rect(self.screen, color, self.player)
 
-    def move_down(self):
+    def move(self, movement):
         """
-            Moves the player down
-        """
-        global BORDER
-        global HEIGHT
-
-        # the amount of pixels the player moves
-
-        move = 6
-
-        new_pos = self.y + move
-
-        # check if the player is gonna pass the borders of the game
-        if new_pos > HEIGHT - BORDER - (self.HEIGHT // 2):
-            move = 0
-
-        self.show(self.HIDE)
-        self.y += move
-        self.show(self.SHOW)
-
-    def move_up(self):
-        """
-            moves the player up
+            Moves the player
         """
         global BORDER
         global HEIGHT
 
         # the amount of pixels the player moves
-        move = -10
 
-        new_pos = self.y + move
+        # the amount of pixels the player moves
+        if movement == "up":
+            move = -10
+        elif movement == "down":
+            move = 10
+
+        # hide the player
+        self.show(self.HIDE)
+
+        # move it
+        self.player.y += move
 
         # check if the player is gonna pass the borders of the game
-        if new_pos < BORDER + (self.HEIGHT // 2):
-            move = 0
+        if self.player.bottom >= HEIGHT - BORDER:
+            self.player.bottom = HEIGHT - BORDER
+        if self.player.top <= BORDER:
+            self.player.top = BORDER
 
-        self.show(self.HIDE)
-        self.y += move
+        # show player
         self.show(self.SHOW)
 
     def get_position(self):
@@ -161,13 +154,13 @@ def move(event, player1, player2, controls):
             controls["s"] = False
 
     if controls["up"]:
-        player1.move_up()
+        player1.move("up")
     if controls["down"]:
-        player1.move_down()
+        player1.move("down")
     if controls["s"]:
-        player2.move_down()
+        player2.move("down")
     if controls["w"]:
-        player2.move_up()
+        player2.move("up")
 
 
 def draw_background(screen):
@@ -187,9 +180,11 @@ def main():
     screen = pygame.display.set_mode((WIDTH, HEIGHT))
     clock = pygame.time.Clock()
 
+    pygame.display.set_caption("Pong")
+
     # speed for ball
-    ball_vx = 5
-    ball_vy = 5
+    ball_vx = 3
+    ball_vy = 3
 
     # dictionary to update player movements
     pressed_keys = {"w": False, "s": False, "down": False, "up": False}
@@ -213,15 +208,15 @@ def main():
 
         # check if the window was closed
         if event.type == pygame.QUIT:
+            pygame.quit()
             break
 
         move(event, player1, player2, pressed_keys)
+
         ball.move(player1.get_position(), player2.get_position())
 
         pygame.display.flip()
         clock.tick(FRAMERATE)
-
-    pygame.quit()
 
 
 if __name__ == "__main__":

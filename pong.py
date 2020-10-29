@@ -45,15 +45,6 @@ class Ball:
         elif self.ball.bottom >= HEIGHT - BORDER:
             self.ball.bottom = HEIGHT - BORDER
 
-        if self.ball.right > WIDTH:
-            self.ball.x = WIDTH // 2
-            self.ball.y = HEIGHT // 2
-            player2.points += 1
-        elif self.ball.left < 0:
-            self.ball.x = WIDTH // 2
-            self.ball.y = HEIGHT // 2
-            player1.points += 1
-
         self.crashed(player1Rect, player2Rect)
 
         self.show(self.SHOW)
@@ -70,6 +61,26 @@ class Ball:
             self.ball.right = player1.left
         elif self.ball.colliderect(player2):
             self.ball.left = player2.right
+
+    def out_of_bounds(self):
+        global WIDTH
+
+        if self.ball.right <= 0:
+            return True, "player1"
+        elif self.ball.left >= WIDTH:
+            return True, "player2"
+        else:
+            return False, ""
+
+    def spawn(self, x, y):
+        # hide the ball
+        self.show(self.HIDE)
+
+        self.ball.x = x
+        self.ball.y = y
+
+        # show the ball
+        self.show(self.SHOW)
 
 
 class Player:
@@ -125,6 +136,19 @@ class Player:
     def get_rect(self):
         return self.player
 
+    def update_points(self):
+        self.points += 1
+
+    def spawn(self, x, y):
+        # hide the player
+        self.show(self.HIDE)
+
+        self.player.x = x - self.WIDTH
+        self.player.y = y - self.HEIGHT // 2
+
+        # show player
+        self.show(self.SHOW)
+
 
 WIDTH = 1200
 HEIGHT = 600
@@ -177,8 +201,45 @@ def draw_background(screen):
     pygame.draw.rect(screen, fgColor, pygame.Rect(
         0, HEIGHT - BORDER, WIDTH, BORDER))
 
+
+def update_score(player1, player2, ball, screen):
+    somebody_won, winner_player = ball.out_of_bounds()
+
+    if somebody_won:
+        if winner_player == "player1":
+            player1.update_points()
+        elif winner_player == "player2":
+            player2.update_points()
+
+        spawn(player1, player2, ball)
+        update_scorboard(player1, player2, screen)
+
+        pygame.time.wait(2000)
+
+
+def spawn(player1, player2, ball):
+    player1.spawn(WIDTH, HEIGHT // 2)
+    player2.spawn(15, HEIGHT // 2)
+
+    ball.spawn(WIDTH // 2, HEIGHT // 2)
+
+
+def update_scorboard(player1, player2, screen):
+    screen.fill(pygame.Color("white"), (0, 0, 150, 20))
+    textsurface = myfont.render(
+        f"Points: {player1.points} - {player2.points}", 1, (255, 255, 255))
+
+    screen.blit(textsurface, (0, 0))
+
+    textsurface = myfont.render(
+        f"Points: {player1.points} - {player2.points}", 1, (0, 0, 0))
+
+    screen.blit(textsurface, (0, 0))
+
+
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
+
 
 def main():
     # start the game screen
@@ -199,14 +260,14 @@ def main():
     # create the ball
     ball = Ball(WIDTH // 2, HEIGHT // 2, ball_vx, ball_vy, screen)
 
-    # crate the players
+    # create the players
     player1 = Player(WIDTH, HEIGHT // 2, screen)
     player2 = Player(15, HEIGHT // 2, screen)
 
     draw_background(screen)
 
     ball.show(fgColor)
-    starts = True
+
     player1.show(fgColor)
     player2.show(fgColor)
 
@@ -222,19 +283,7 @@ def main():
 
         ball.move(player1.get_rect(), player2.get_rect(), player1, player2)
 
-        if starts:
-            textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), 1, (0, 0, 0))
-            screen.blit(textsurface, (0, 0))
-            tempPoints1 = player1.points
-            tempPoints2 = player2.points
-            starts = False
-        elif tempPoints1 != player1.points or tempPoints2 != player2.points:
-            textsurface = myfont.render("Points: " + str(tempPoints1) + " - " + str(tempPoints2), 1, (255, 255, 255))
-            screen.blit(textsurface, (0, 0))
-            textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), 1, (0, 0, 0))
-            screen.blit(textsurface, (0, 0))
-            tempPoints1 = player1.points
-            tempPoints2 = player2.points
+        update_score(player1, player2, ball, screen)
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

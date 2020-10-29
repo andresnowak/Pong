@@ -48,11 +48,11 @@ class Ball:
         if self.ball.right > WIDTH:
             self.ball.x = WIDTH // 2
             self.ball.y = HEIGHT // 2
-            player2.points += 1
+            player1.points += 1
         elif self.ball.left < 0:
             self.ball.x = WIDTH // 2
             self.ball.y = HEIGHT // 2
-            player1.points += 1
+            player2.points += 1
 
         self.crashed(player1Rect, player2Rect)
 

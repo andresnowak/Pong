@@ -229,6 +229,7 @@ def main():
             tempPoints2 = player2.points
             starts = False
         elif tempPoints1 != player1.points or tempPoints2 != player2.points:
+            screen.fill(pygame.Color("white"), (0, 0, 150, 20))
             textsurface = myfont.render("Points: " + str(tempPoints1) + " - " + str(tempPoints2), 1, (255, 255, 255))
             screen.blit(textsurface, (0, 0))
             textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), 1, (0, 0, 0))

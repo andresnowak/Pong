@@ -3,10 +3,17 @@ For group 4 of Ken's TC1001 class, October 2020
 
 PONG GAME
 
+<<<<<<< HEAD
 Team Members:
     Jorge Alejandro López Sosa\
     Andrés Eduardo Nowak De Anda\
     Andrés Olvera Rodríguez
+=======
+Team Members: \
+    Jorge Alejandro López Sosa \
+    Andrés Eduardo Nowak De Anda \
+    Andrés Olvera Rodríguez \
+>>>>>>> 1bef79595993895ddc2cc8afe1a95c86b053e8e8
 
 [![Pong demonstration](https://youtu.be/maDIb-jdNWM)]
 

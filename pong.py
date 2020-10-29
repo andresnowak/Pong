@@ -73,6 +73,9 @@ class Ball:
             return False, ""
 
     def spawn(self, x, y):
+        """
+            spawns the ball to the position it gets in x and y
+        """
         # hide the ball
         self.show(self.HIDE)
 
@@ -140,6 +143,9 @@ class Player:
         self.points += 1
 
     def spawn(self, x, y):
+        """
+            spawns the player to the position it gets in x and y
+        """
         # hide the player
         self.show(self.HIDE)
 
@@ -203,6 +209,10 @@ def draw_background(screen):
 
 
 def update_score(player1, player2, ball, screen):
+    """
+        It checks if somebody won and if it happens, it updates the scoreboard
+        and spawns the player and ball to default position
+    """
     somebody_won, winner_player = ball.out_of_bounds()
 
     if somebody_won:
@@ -214,10 +224,14 @@ def update_score(player1, player2, ball, screen):
         spawn(player1, player2, ball)
         update_scorboard(player1, player2, screen)
 
+        # we make a pause so players can prepare themselves
         pygame.time.wait(2000)
 
 
 def spawn(player1, player2, ball):
+    """
+        spawns the ball and player to default position
+    """
     player1.spawn(WIDTH, HEIGHT // 2)
     player2.spawn(15, HEIGHT // 2)
 
@@ -225,7 +239,14 @@ def spawn(player1, player2, ball):
 
 
 def update_scorboard(player1, player2, screen):
+    """
+        updates the scoreboard to the new values
+    """
+
+    # make the bar white to remove old points
     screen.fill(pygame.Color("white"), (0, 0, 150, 20))
+
+    # we hide the old points and render the new points
     textsurface = myfont.render(
         f"Points: {player1.points} - {player2.points}", 1, (255, 255, 255))
 

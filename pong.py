@@ -248,12 +248,19 @@ def update_scorboard(player1, player2, screen):
 
     # we hide the old points and render the new points
     textsurface = myfont.render(
-        f"Points: {player1.points} - {player2.points}", 1, (255, 255, 255))
+        f"Points: {player2.points} - {player1.points}", 1, (255, 255, 255))
 
     screen.blit(textsurface, (0, 0))
 
     textsurface = myfont.render(
-        f"Points: {player1.points} - {player2.points}", 1, (0, 0, 0))
+        f"Points: {player2.points} - {player1.points}", 1, (0, 0, 0))
+
+    screen.blit(textsurface, (0, 0))
+
+
+def make_scoreboard(player1, player2, screen):
+    textsurface = myfont.render(
+        f"Points: {player2.points} - {player1.points}", 1, (0, 0, 0))
 
     screen.blit(textsurface, (0, 0))
 
@@ -291,6 +298,8 @@ def main():
 
     player1.show(fgColor)
     player2.show(fgColor)
+
+    make_scoreboard(player1, player2, screen)
 
     while True:
         event = pygame.event.poll()

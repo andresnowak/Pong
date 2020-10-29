@@ -26,6 +26,7 @@ class Ball:
         """
         global BORDER
         global HEIGHT
+        global WIDTH
 
         new_pos_x = self.ball.x + self.vx
         new_pos_y = self.ball.y + self.vy
@@ -43,6 +44,13 @@ class Ball:
             self.ball.top = BORDER
         elif self.ball.bottom >= HEIGHT - BORDER:
             self.ball.bottom = HEIGHT - BORDER
+
+        if self.ball.right > WIDTH:
+            self.ball.x = WIDTH // 2
+            self.ball.y = HEIGHT // 2
+        elif self.ball.left < 0:
+            self.ball.x = WIDTH // 2
+            self.ball.y = HEIGHT // 2
 
         self.crashed(player1, player2)
 
@@ -65,6 +73,7 @@ class Ball:
 class Player:
     WIDTH = 15
     HEIGHT = 100
+    points = 0
 
     HIDE = pygame.Color("black")  # color to hide the player with background
     SHOW = pygame.Color("white")  # color tho show the player
@@ -167,6 +176,9 @@ def draw_background(screen):
         0, HEIGHT - BORDER, WIDTH, BORDER))
 
 
+pygame.font.init()
+myfont = pygame.font.SysFont('Comic Sans MS', 30)
+
 def main():
     # start the game screen
     pygame.init()
@@ -208,6 +220,9 @@ def main():
         move(event, player1, player2, pressed_keys)
 
         ball.move(player1.get_rect(), player2.get_rect())
+
+        textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), False, (0, 0, 0))
+        screen.blit(textsurface, (0, 0))
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

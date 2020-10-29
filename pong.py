@@ -258,12 +258,7 @@ def update_scorboard(player1, player2, screen):
     # make the bar white to remove old points
     screen.fill(pygame.Color("white"), (0, 0, 150, 20))
 
-    # we hide the old points and render the new points
-    textsurface = myfont.render(
-        f"Points: {player2.points} - {player1.points}", 1, (255, 255, 255))
-
-    screen.blit(textsurface, (0, 0))
-
+    # we render the new points
     textsurface = myfont.render(
         f"Points: {player2.points} - {player1.points}", 1, (0, 0, 0))
 

@@ -8,7 +8,7 @@ For group 4 of Ken's TC1001 class, October 2020
     Andrés Eduardo Nowak De Anda
     Andrés Olvera Rodríguez
 
-Click to see full video:
+Click to see full video:\
 [![Watch the video](https://i.imgur.com/sNqwNjK.gif)](https://youtu.be/maDIb-jdNWM)
 
 

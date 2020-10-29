@@ -15,58 +15,51 @@ class Ball:
 
         self.ball = pygame.Rect(x, y, self.RADIUS, self.RADIUS)
 
-        self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 30, 30)
-
         self.screen = screen
 
     def show(self, color):
         pygame.draw.ellipse(self.screen, color, self.ball)
-        pygame.draw.rect(self.screen, color, self.hitbox, 2)
 
-    def move(self, player1_pos, player2_pos):
+    def move(self, player1, player2):
         """
             moves the ball
         """
         global BORDER
+        global HEIGHT
 
         new_pos_x = self.ball.x + self.vx
         new_pos_y = self.ball.y + self.vy
 
-        hitbox = (new_pos_x - self.RADIUS, new_pos_y - self.RADIUS, 25, 25)
+        self.show(self.HIDE)
 
-        if self.crashed(player1_pos, player2_pos, hitbox):
-            self.vx *= -1
-        elif new_pos_y < BORDER + self.RADIUS or new_pos_y > HEIGHT - BORDER - self.RADIUS:
+        # update position of ball
+        self.ball.x = new_pos_x
+        self.ball.y = new_pos_y
+
+        if self.ball.top <= BORDER or self.ball.bottom >= HEIGHT - BORDER:
             self.vy *= -1
 
-        else:
-            self.show(self.HIDE)
+        if self.ball.top <= BORDER:
+            self.ball.top = BORDER
+        elif self.ball.bottom >= HEIGHT - BORDER:
+            self.ball.bottom = HEIGHT - BORDER
 
-            # update position of ball
-            self.ball.x = new_pos_x
-            self.ball.y = new_pos_y
+        self.crashed(player1, player2)
 
-            # update position of its hitbox
-            self.hitbox = (self.x - self.RADIUS, self.y - self.RADIUS, 25, 25)
+        self.show(self.SHOW)
 
-            self.show(self.SHOW)
-
-    def crashed(self, player1_pos, player2_pos, hitbox):
+    def crashed(self, player1, player2):
         """
             Check if the ball has crashed with a player to bounce
         """
-        global WIDTH
 
-        if hitbox[0] + hitbox[2] >= WIDTH - player1_pos[2] and hitbox[0] + hitbox[2] < WIDTH:
-            if hitbox[1] <= player1_pos[0] and hitbox[1] + hitbox[3] >= player1_pos[0] - player1_pos[1]:
-                print("hey")
-                return True
-        elif hitbox[0] <= player2_pos[2] and hitbox[0] > 0:
-            if hitbox[1] <= player2_pos[0] and hitbox[1] + hitbox[3] >= player2_pos[0] - player2_pos[1]:
-                print("hey2")
-                return True
-        else:
-            return False
+        if self.ball.colliderect(player1) or self.ball.colliderect(player2):
+            self.vx *= -1
+
+        if self.ball.colliderect(player1):
+            self.ball.right = player1.left
+        elif self.ball.colliderect(player2):
+            self.ball.left = player2.right
 
 
 class Player:
@@ -95,12 +88,13 @@ class Player:
         global HEIGHT
 
         # the amount of pixels the player moves
+        move = 4
 
         # the amount of pixels the player moves
         if movement == "up":
-            move = -10
+            move *= -1
         elif movement == "down":
-            move = 10
+            move *= 1
 
         # hide the player
         self.show(self.HIDE)
@@ -117,8 +111,8 @@ class Player:
         # show player
         self.show(self.SHOW)
 
-    def get_position(self):
-        return self.y, self.HEIGHT, self.WIDTH
+    def get_rect(self):
+        return self.player
 
 
 WIDTH = 1200
@@ -183,8 +177,8 @@ def main():
     pygame.display.set_caption("Pong")
 
     # speed for ball
-    ball_vx = 3
-    ball_vy = 3
+    ball_vx = 6
+    ball_vy = 6
 
     # dictionary to update player movements
     pressed_keys = {"w": False, "s": False, "down": False, "up": False}
@@ -213,7 +207,7 @@ def main():
 
         move(event, player1, player2, pressed_keys)
 
-        ball.move(player1.get_position(), player2.get_position())
+        ball.move(player1.get_rect(), player2.get_rect())
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

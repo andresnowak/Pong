@@ -259,6 +259,9 @@ def update_scorboard(player1, player2, screen):
 
 
 def make_scoreboard(player1, player2, screen):
+    """
+        It makes the scoreboard with the default values for start of game
+    """
     textsurface = myfont.render(
         f"Points: {player2.points} - {player1.points}", 1, (0, 0, 0))
 

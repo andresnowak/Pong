@@ -20,7 +20,7 @@ class Ball:
     def show(self, color):
         pygame.draw.ellipse(self.screen, color, self.ball)
 
-    def move(self, player1, player2):
+    def move(self, player1Rect, player2Rect, player1, player2):
         """
             moves the ball
         """
@@ -48,11 +48,13 @@ class Ball:
         if self.ball.right > WIDTH:
             self.ball.x = WIDTH // 2
             self.ball.y = HEIGHT // 2
+            player2.points += 1
         elif self.ball.left < 0:
             self.ball.x = WIDTH // 2
             self.ball.y = HEIGHT // 2
+            player1.points += 1
 
-        self.crashed(player1, player2)
+        self.crashed(player1Rect, player2Rect)
 
         self.show(self.SHOW)
 
@@ -175,7 +177,6 @@ def draw_background(screen):
     pygame.draw.rect(screen, fgColor, pygame.Rect(
         0, HEIGHT - BORDER, WIDTH, BORDER))
 
-
 pygame.font.init()
 myfont = pygame.font.SysFont('Comic Sans MS', 30)
 
@@ -205,7 +206,7 @@ def main():
     draw_background(screen)
 
     ball.show(fgColor)
-
+    starts = True
     player1.show(fgColor)
     player2.show(fgColor)
 
@@ -219,10 +220,21 @@ def main():
 
         move(event, player1, player2, pressed_keys)
 
-        ball.move(player1.get_rect(), player2.get_rect())
+        ball.move(player1.get_rect(), player2.get_rect(), player1, player2)
 
-        textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), False, (0, 0, 0))
-        screen.blit(textsurface, (0, 0))
+        if starts:
+            textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), 1, (0, 0, 0))
+            screen.blit(textsurface, (0, 0))
+            tempPoints1 = player1.points
+            tempPoints2 = player2.points
+            starts = False
+        elif tempPoints1 != player1.points or tempPoints2 != player2.points:
+            textsurface = myfont.render("Points: " + str(tempPoints1) + " - " + str(tempPoints2), 1, (255, 255, 255))
+            screen.blit(textsurface, (0, 0))
+            textsurface = myfont.render("Points: " + str(player1.points) + " - " + str(player2.points), 1, (0, 0, 0))
+            screen.blit(textsurface, (0, 0))
+            tempPoints1 = player1.points
+            tempPoints2 = player2.points
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

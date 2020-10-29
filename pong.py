@@ -156,6 +156,12 @@ class Player:
         # show player
         self.show(self.SHOW)
 
+    def get_points(self):
+        return self.points
+
+    def reset_points(self):
+        self.points = 0
+
 
 WIDTH = 1200
 HEIGHT = 600
@@ -242,6 +248,32 @@ def update_score(player1, player2, ball, screen):
         return False
 
 
+def game_ended(player1, player2):
+    """
+        Checks if the game has ended
+    """
+    if player1.get_points() == 11 or player2.get_points() == 11:
+        return True
+    else:
+        return False
+
+
+def restart_game(player1, player2, ball, screen):
+    reset_scoreboard(player1, player2, screen)
+
+    spawn(player1, player2, ball)
+
+
+def reset_scoreboard(player1, player2, screen):
+    """
+        resets the scoreboard to 0
+    """
+    player1.reset_points()
+    player2.reset_points()
+
+    update_scorboard(player1, player2, screen)
+
+
 def spawn(player1, player2, ball):
     """
         spawns the ball and player to default position
@@ -322,6 +354,10 @@ def main():
             pygame.time.wait(2000)
 
             for_pausing_game = 0
+
+        # check if if game has ended
+        if game_ended(player1, player2):
+            restart_game(player1, player2, ball, screen)
 
         # get the events
         event = pygame.event.poll()

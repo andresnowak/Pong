@@ -20,3 +20,9 @@ Click to see full video:\
 #### Controls:
     The controls for the left player are 'w' for upward motion and 's' for downward motion.
     The controls for the right player are 'up arrow' for upward motion and 'down arrow' for downward motion.
+
+
+##### Why did we make this project
+    We made this project because pong game its a really easy to make game
+    and fun game to play and because we wanted to have fun making a game
+    with something like pygame and practice our skills

@@ -9,7 +9,7 @@ Team Members:
     Andrés Olvera Rodríguez
 
 Description:
-    This is the classic game of pong where two players on opposite sides of each other try to hit the ball to the other side to score a point. If the ball reaches the other side and the opponent cannot hit it back, you score a point. The game ends when one player reaches 11 points.
+    This is the classic game of pong where two players on opposite sides of each other try to hit the ball to the other side to score a point. If the ball reaches the other side and the opponent cannot hit it back, you score a point. The game resets when one player reaches 11 points.
 
 Controls:
     The controls for the left player are 'w' for upward motion and 's' for downward motion.

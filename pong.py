@@ -236,8 +236,9 @@ def update_score(player1, player2, ball, screen):
         spawn(player1, player2, ball)
         update_scorboard(player1, player2, screen)
 
-        # we make a pause so players can prepare themselves
-        pygame.time.wait(2000)
+        return True
+    else:
+        return False
 
 
 def spawn(player1, player2, ball):
@@ -311,7 +312,17 @@ def main():
 
     make_scoreboard(player1, player2, screen)
 
+    for_pausing_game = 0
+
     while True:
+        # check if we have to pause the game
+        if for_pausing_game == 1:
+            # we make a pause so players can prepare themselves
+            pygame.time.wait(2000)
+
+            for_pausing_game = 0
+
+        # get the events
         event = pygame.event.poll()
 
         # check if the window was closed
@@ -323,7 +334,10 @@ def main():
 
         ball.move(player1.get_rect(), player2.get_rect(), player1, player2)
 
-        update_score(player1, player2, ball, screen)
+        # we update this variable to check in the next loop if it changed to
+        # make a pause in the next frame
+        if update_score(player1, player2, ball, screen):
+            for_pausing_game += 1
 
         # we draw the middle line so when the ball passes over it it resets itself
         draw_middle_line(screen)

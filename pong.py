@@ -13,7 +13,8 @@ class Ball:
         self.vx = vx
         self.vy = vy
 
-        self.ball = pygame.Rect(x, y, self.RADIUS, self.RADIUS)
+        self.ball = pygame.Rect(x - self.RADIUS // 2, y,
+                                self.RADIUS, self.RADIUS)
 
         self.screen = screen
 
@@ -79,7 +80,7 @@ class Ball:
         # hide the ball
         self.show(self.HIDE)
 
-        self.ball.x = x
+        self.ball.x = x - self.RADIUS // 2
         self.ball.y = y
 
         # show the ball

@@ -202,10 +202,22 @@ def draw_background(screen):
     """
         Draws the background for the game
     """
+
     pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, WIDTH, BORDER))
     pygame.draw.rect(screen, fgColor, pygame.Rect(0, 0, HEIGHT, BORDER))
     pygame.draw.rect(screen, fgColor, pygame.Rect(
         0, HEIGHT - BORDER, WIDTH, BORDER))
+
+    draw_middle_line(screen)
+
+
+def draw_middle_line(screen):
+    """
+        draws the middle line of the game that tells you the space
+        of each player
+    """
+    grey = (200, 200, 200)
+    pygame.draw.aaline(screen, grey, (WIDTH // 2, 0), (WIDTH // 2, HEIGHT))
 
 
 def update_score(player1, player2, ball, screen):
@@ -317,6 +329,9 @@ def main():
         ball.move(player1.get_rect(), player2.get_rect(), player1, player2)
 
         update_score(player1, player2, ball, screen)
+
+        # we draw the middle line so when the ball passes over it it resets itself
+        draw_middle_line(screen)
 
         pygame.display.flip()
         clock.tick(FRAMERATE)

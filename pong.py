@@ -1,6 +1,7 @@
 import pygame
 from Ball import Ball
 from Player import Player
+from Controller import Controller
 
 
 WIDTH = 1200
@@ -12,37 +13,13 @@ fgColor = pygame.Color("white")
 FRAMERATE = 60
 
 
-def move(event, player1, player2, controls):
+def move(event, player1, player2):
     """
         moves the player depending on what key was pressed
     """
-    if event.type == pygame.KEYDOWN:
-        if event.key == pygame.K_UP:
-            controls["up"] = True
-        if event.key == pygame.K_DOWN:
-            controls["down"] = True
-        if event.key == pygame.K_w:
-            controls["w"] = True
-        if event.key == pygame.K_s:
-            controls["s"] = True
-    elif event.type == pygame.KEYUP:
-        if event.key == pygame.K_UP:
-            controls["up"] = False
-        if event.key == pygame.K_DOWN:
-            controls["down"] = False
-        if event.key == pygame.K_w:
-            controls["w"] = False
-        if event.key == pygame.K_s:
-            controls["s"] = False
 
-    if controls["up"]:
-        player1.move("up", HEIGHT, BORDER)
-    if controls["down"]:
-        player1.move("down", HEIGHT, BORDER)
-    if controls["s"]:
-        player2.move("down", HEIGHT, BORDER)
-    if controls["w"]:
-        player2.move("up", HEIGHT, BORDER)
+    player1.move(event, HEIGHT, BORDER)
+    player2.move(event, HEIGHT, BORDER)
 
 
 def draw_background(screen):
@@ -164,18 +141,18 @@ def main():
     pygame.display.set_caption("Pong")
 
     # speed for ball
-    ball_vx = 6
-    ball_vy = 6
-
-    # dictionary to update player movements
-    pressed_keys = {"w": False, "s": False, "down": False, "up": False}
+    BALL_VX = 6
+    BALL_VY = 6
 
     # create the ball
-    ball = Ball(WIDTH // 2, HEIGHT // 2, ball_vx, ball_vy, screen)
+    ball = Ball(WIDTH // 2, HEIGHT // 2, BALL_VX, BALL_VY, screen)
 
-    # create the players
-    player1 = Player(WIDTH, HEIGHT // 2, screen)
-    player2 = Player(15, HEIGHT // 2, screen)
+    # create the players and controller
+    controller = Controller(up=pygame.K_UP, down=pygame.K_DOWN)
+    player1 = Player(WIDTH, HEIGHT // 2, screen, controller)
+
+    controller = Controller(up=pygame.K_w, down=pygame.K_s)
+    player2 = Player(15, HEIGHT // 2, screen, controller)
 
     draw_background(screen)
 
@@ -208,7 +185,7 @@ def main():
             pygame.quit()
             break
 
-        move(event, player1, player2, pressed_keys)
+        move(event, player1, player2)
 
         ball.move(player1.get_rect(), player2.get_rect(),
                   player1, player2, HEIGHT, BORDER)

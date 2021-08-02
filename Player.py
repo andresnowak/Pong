@@ -1,4 +1,5 @@
 import pygame
+from Controller import ControllerKeyTypes
 
 
 class Player:
@@ -9,10 +10,11 @@ class Player:
     HIDE = pygame.Color("black")  # color to hide the player with background
     SHOW = pygame.Color("white")  # color tho show the player
 
-    def __init__(self, x, y, screen):
+    def __init__(self, x, y, screen, controller):
         self.x = x
         self.y = y
         self.screen = screen
+        self.controller = controller
 
         self.player = pygame.Rect(
             self.x - self.WIDTH, self.y - self.screen_height // 2, self.WIDTH, self.screen_height)
@@ -20,7 +22,7 @@ class Player:
     def show(self, color):
         pygame.draw.rect(self.screen, color, self.player)
 
-    def move(self, movement, screen_height, screen_border):
+    def move(self, event, screen_height, screen_border):
         """
             Moves the player
         """
@@ -29,10 +31,14 @@ class Player:
         move = 4
 
         # the amount of pixels the player moves
-        if movement == "up":
+        player_movement_to_be_made = self.controller.action_activated(event)
+
+        if player_movement_to_be_made.get(ControllerKeyTypes.KEY_UP):
             move *= -1
-        elif movement == "down":
+        elif player_movement_to_be_made.get(ControllerKeyTypes.KEY_DOWN):
             move *= 1
+        else:
+            move = 0
 
         # hide the player
         self.show(self.HIDE)

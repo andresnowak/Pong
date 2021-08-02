@@ -164,8 +164,8 @@ class Player:
 
 
 WIDTH = 1200
-HEIGHT = 600
-BORDER = 20
+HEIGHT = 640
+BORDER = 40
 
 fgColor = pygame.Color("white")
 
@@ -290,7 +290,8 @@ def update_scorboard(player1, player2, screen):
     """
 
     # make the bar white to remove old points
-    screen.fill(pygame.Color("white"), (0, 0, 150, 20))
+    WIDTH_OF_SCOREBOARD = 300
+    screen.fill(pygame.Color("white"), (0, 0, WIDTH_OF_SCOREBOARD, BORDER))
 
     # we render the new points
     textsurface = myfont.render(

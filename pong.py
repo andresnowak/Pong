@@ -1,166 +1,6 @@
 import pygame
-
-
-class Ball:
-    RADIUS = 20
-
-    HIDE = pygame.Color("black")  # color to hide the ball with background
-    SHOW = pygame.Color("white")  # color tho show the ball
-
-    def __init__(self, x, y, vx, vy, screen):
-        self.x = x
-        self.y = y
-        self.vx = vx
-        self.vy = vy
-
-        self.ball = pygame.Rect(x - self.RADIUS // 2, y,
-                                self.RADIUS, self.RADIUS)
-
-        self.screen = screen
-
-    def show(self, color):
-        pygame.draw.ellipse(self.screen, color, self.ball)
-
-    def move(self, player1Rect, player2Rect, player1, player2):
-        """
-            moves the ball
-        """
-        global BORDER
-        global HEIGHT
-        global WIDTH
-
-        new_pos_x = self.ball.x + self.vx
-        new_pos_y = self.ball.y + self.vy
-
-        self.show(self.HIDE)
-
-        # update position of ball
-        self.ball.x = new_pos_x
-        self.ball.y = new_pos_y
-
-        if self.ball.top <= BORDER or self.ball.bottom >= HEIGHT - BORDER:
-            self.vy *= -1
-
-        if self.ball.top <= BORDER:
-            self.ball.top = BORDER
-        elif self.ball.bottom >= HEIGHT - BORDER:
-            self.ball.bottom = HEIGHT - BORDER
-
-        self.crashed(player1Rect, player2Rect)
-
-        self.show(self.SHOW)
-
-    def crashed(self, player1, player2):
-        """
-            Check if the ball has crashed with a player to bounce
-        """
-
-        if self.ball.colliderect(player1) or self.ball.colliderect(player2):
-            self.vx *= -1
-
-        if self.ball.colliderect(player1):
-            self.ball.right = player1.left
-        elif self.ball.colliderect(player2):
-            self.ball.left = player2.right
-
-    def out_of_bounds(self):
-        global WIDTH
-
-        if self.ball.right <= 0:
-            return True, "player1"
-        elif self.ball.left >= WIDTH:
-            return True, "player2"
-        else:
-            return False, ""
-
-    def spawn(self, x, y):
-        """
-            spawns the ball to the position it gets in x and y
-        """
-        # hide the ball
-        self.show(self.HIDE)
-
-        self.ball.x = x - self.RADIUS // 2
-        self.ball.y = y
-
-        # show the ball
-        self.show(self.SHOW)
-
-
-class Player:
-    WIDTH = 15
-    HEIGHT = 100
-    points = 0
-
-    HIDE = pygame.Color("black")  # color to hide the player with background
-    SHOW = pygame.Color("white")  # color tho show the player
-
-    def __init__(self, x, y, screen):
-        self.x = x
-        self.y = y
-        self.screen = screen
-
-        self.player = pygame.Rect(
-            self.x - self.WIDTH, self.y - self.HEIGHT // 2, self.WIDTH, self.HEIGHT)
-
-    def show(self, color):
-        pygame.draw.rect(self.screen, color, self.player)
-
-    def move(self, movement):
-        """
-            Moves the player
-        """
-        global BORDER
-        global HEIGHT
-
-        # the amount of pixels the player moves
-        move = 4
-
-        # the amount of pixels the player moves
-        if movement == "up":
-            move *= -1
-        elif movement == "down":
-            move *= 1
-
-        # hide the player
-        self.show(self.HIDE)
-
-        # move it
-        self.player.y += move
-
-        # check if the player is gonna pass the borders of the game
-        if self.player.bottom >= HEIGHT - BORDER:
-            self.player.bottom = HEIGHT - BORDER
-        if self.player.top <= BORDER:
-            self.player.top = BORDER
-
-        # show player
-        self.show(self.SHOW)
-
-    def get_rect(self):
-        return self.player
-
-    def update_points(self):
-        self.points += 1
-
-    def spawn(self, x, y):
-        """
-            spawns the player to the position it gets in x and y
-        """
-        # hide the player
-        self.show(self.HIDE)
-
-        self.player.x = x - self.WIDTH
-        self.player.y = y - self.HEIGHT // 2
-
-        # show player
-        self.show(self.SHOW)
-
-    def get_points(self):
-        return self.points
-
-    def reset_points(self):
-        self.points = 0
+from Ball import Ball
+from Player import Player
 
 
 WIDTH = 1200
@@ -196,13 +36,13 @@ def move(event, player1, player2, controls):
             controls["s"] = False
 
     if controls["up"]:
-        player1.move("up")
+        player1.move("up", HEIGHT, BORDER)
     if controls["down"]:
-        player1.move("down")
+        player1.move("down", HEIGHT, BORDER)
     if controls["s"]:
-        player2.move("down")
+        player2.move("down", HEIGHT, BORDER)
     if controls["w"]:
-        player2.move("up")
+        player2.move("up", HEIGHT, BORDER)
 
 
 def draw_background(screen):
@@ -232,7 +72,7 @@ def update_score(player1, player2, ball, screen):
         It checks if somebody won and if it happens, it updates the scoreboard
         and spawns the player and ball to default position
     """
-    somebody_won, winner_player = ball.out_of_bounds()
+    somebody_won, winner_player = ball.out_of_bounds(WIDTH)
 
     if somebody_won:
         if winner_player == "player1":
@@ -370,7 +210,8 @@ def main():
 
         move(event, player1, player2, pressed_keys)
 
-        ball.move(player1.get_rect(), player2.get_rect(), player1, player2)
+        ball.move(player1.get_rect(), player2.get_rect(),
+                  player1, player2, HEIGHT, BORDER)
 
         # we update this variable to check in the next loop if it changed to
         # make a pause in the next frame

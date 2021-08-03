@@ -64,6 +64,8 @@ class Ball:
         if self.ball.top <= screen_border or self.ball.bottom >= screen_height - screen_border:
             self.vy *= -1
 
+        self.stop_ball_going_out_of_bounds(screen_border, screen_height)
+
     def out_of_bounds(self, screen_width_bounds):
         if self.ball.right <= 0:
             return True, "player1"

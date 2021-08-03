@@ -10,14 +10,14 @@ class Player:
     HIDE = pygame.Color("black")  # color to hide the player with background
     SHOW = pygame.Color("white")  # color tho show the player
 
-    def __init__(self, x, y, screen, controller):
-        self.x = x
-        self.y = y
+    def __init__(self, start_pos_x, start_pos_y, screen, controller):
+        self.pos_x = start_pos_x
+        self.pos_y = start_pos_y
         self.screen = screen
         self.controller = controller
 
         self.player = pygame.Rect(
-            self.x - self.WIDTH, self.y - self.screen_height // 2, self.WIDTH, self.screen_height)
+            self.pos_x - self.WIDTH, self.pos_y - self.screen_height // 2, self.WIDTH, self.screen_height)
 
     def show(self, color):
         pygame.draw.rect(self.screen, color, self.player)
@@ -46,14 +46,17 @@ class Player:
         # move it
         self.player.y += move
 
+        self.stop_player_going_out_of_bounds(screen_height, screen_border)
+
+        # show player
+        self.show(self.SHOW)
+
+    def stop_player_going_out_of_bounds(self, screen_height, screen_border):
         # check if the player is gonna pass the borders of the game
         if self.player.bottom >= screen_height - screen_border:
             self.player.bottom = screen_height - screen_border
         if self.player.top <= screen_border:
             self.player.top = screen_border
-
-        # show player
-        self.show(self.SHOW)
 
     def get_rect(self):
         return self.player

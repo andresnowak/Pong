@@ -35,21 +35,21 @@ class Ball:
         self.ball.x = new_pos_x
         self.ball.y = new_pos_y
 
-        if self.ball.top <= screen_border or self.ball.bottom >= screen_height - screen_border:
-            self.vy *= -1
+        # check if ball has crashed and make it bounce if true
+        self.crashed_wall(screen_border, screen_height)
+        self.crashed_player(player1Rect, player2Rect)
 
+        self.show(self.SHOW)
+
+    def stop_ball_going_out_of_bounds(self, screen_border, screen_height):
         if self.ball.top <= screen_border:
             self.ball.top = screen_border
         elif self.ball.bottom >= screen_height - screen_border:
             self.ball.bottom = screen_height - screen_border
 
-        self.crashed(player1Rect, player2Rect)
-
-        self.show(self.SHOW)
-
-    def crashed(self, player1, player2):
+    def crashed_player(self, player1, player2):
         """
-            Check if the ball has crashed with a player to bounce
+            Check if the ball has crashed with a player and bounce it
         """
 
         if self.ball.colliderect(player1) or self.ball.colliderect(player2):
@@ -59,6 +59,10 @@ class Ball:
             self.ball.right = player1.left
         elif self.ball.colliderect(player2):
             self.ball.left = player2.right
+
+    def crashed_wall(self, screen_border, screen_height):
+        if self.ball.top <= screen_border or self.ball.bottom >= screen_height - screen_border:
+            self.vy *= -1
 
     def out_of_bounds(self, screen_width_bounds):
         if self.ball.right <= 0:
